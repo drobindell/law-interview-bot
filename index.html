@@ -44,15 +44,20 @@
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `You are a witness in a legal case. Stay in character. Be concise but realistic. Answer this question: ${text}` }] }]
+                        contents: [{ parts: [{ text: `You are a witness in a legal case. Answer this: ${text}` }] }]
                     })
                 });
 
                 const data = await response.json();
-                const botResponse = data.candidates[0].content.parts[0].text;
-                appendMessage(botResponse, 'bot');
+                
+                if (data.error) {
+                    appendMessage("API Error: " + data.error.message, 'bot');
+                } else {
+                    const botResponse = data.candidates[0].content.parts[0].text;
+                    appendMessage(botResponse, 'bot');
+                }
             } catch (error) {
-                appendMessage("Error: Could not connect to the witness. Check your API key.", 'bot');
+                appendMessage("Connection Error. Check your internet or API key format.", 'bot');
             } finally {
                 sendBtn.disabled = false;
             }
